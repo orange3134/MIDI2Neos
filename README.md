@@ -2,7 +2,7 @@
 MIDI入力をWebSocketに変換してNeos VRに渡すツール。
 
 # インストール
-1. [最新のリリース](https://github.com/orange3134/MIDI2Neos/releases/)をダウンロードして解答。
+1. [最新のリリース](https://github.com/orange3134/MIDI2Neos/releases/)をダウンロードして解凍。
 2. Neos VRでOrange Garageワールドに行き、Orange Shareのパブリックフォルダーを入手する。
 
 # 使い方
