@@ -1,5 +1,6 @@
 const midi = require('midi');
 const midiinput = new midi.Input();
+const midioutput = new midi.Output();
 const readline = require('readline');
 
 // WebSocketのサーバの生成
@@ -29,6 +30,8 @@ server.on('connection', ws => {
     // クライアントからのデータ受信時に呼ばれる
     ws.on('message', message => {
         console.log(message);
+        var json = JSON.parse(message);
+        midioutput.sendMessage([json[0],json[1],json[2]]);
     });
 
     // 切断時に呼ばれる
@@ -39,25 +42,31 @@ server.on('connection', ws => {
 
 // MIDIポートの確認
 var portCount = midiinput.getPortCount();
+var portOutputCount = midioutput.getPortCount();
 console.log('MIDIポート数:' + portCount);
 
 // 各ポート名を表示
-console.log('--------')
+console.log('Input--------')
 for ( var i = 0; i < portCount; i++ ){
     console.log( i + ': ' + midiinput.getPortName(i));
+}
+console.log('Output--------')
+for ( var i = 0; i < portOutputCount; i++ ){
+    console.log( i + ': ' + midioutput.getPortName(i));
 }
 console.log('--------')
 
 
+
 const selectPort = async () => {
     for (;;) {
-        const answer = await prompt('使用するMIDIポートの番号を入力し、Enterを押してください');
+        const answer = await prompt('使用するMIDI Inputポートの番号を入力し、Enterを押してください');
         var input = answer - 0;
 
         if (Number.isInteger(input) & input < portCount) {
             // 入力されたポートを開く
             midiinput.openPort(input);
-            console.log(input + '番のポートを開きました')
+            console.log(input + '番のInputポートを開きました')
             break;
         } else if (Number.isInteger(input)) {
             console.log('その番号のポートはありません');
@@ -66,7 +75,24 @@ const selectPort = async () => {
         }
     }
 };
-  
+
+const selectOutputPort = async () => {
+    for (;;) {
+        const answer = await prompt('使用するMIDI Outputポートの番号を入力し、Enterを押してください');
+        var input = answer - 0;
+
+        if (Number.isInteger(input) & input < portOutputCount) {
+            // 入力されたポートを開く
+            midioutput.openPort(input);
+            console.log(input + '番のOutputポートを開きました')
+            break;
+        } else if (Number.isInteger(input)) {
+            console.log('その番号のポートはありません');
+        } else {
+            console.log('整数を指定してください');
+        }
+    }
+};
 
 // ユーザーに値を入力させる
 
@@ -95,4 +121,5 @@ const question = (question) => {
   // 起動
 (async () => {
     await selectPort();
+    await selectOutputPort();
 })();
